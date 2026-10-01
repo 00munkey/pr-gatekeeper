@@ -12,6 +12,22 @@ gate, remember, measure — rather than a chat demo. See
 `docs/superpowers/specs/2026-09-30-pr-gatekeeper-design.md` for the full
 design and how each piece maps to that goal.
 
+## ⚠️ This executes untrusted code
+
+Reviewing a PR means cloning its branch and running `pytest` against it.
+`pytest` executes a repo's `conftest.py` at collection time, before any test
+runs — so merely *reviewing* a hostile PR is arbitrary code execution, as
+the invoking user, with `GITHUB_TOKEN` and `ANTHROPIC_API_KEY` in the
+environment. Only point this at repos and branches you trust. The demo
+repo is scoped deliberately so this never comes up there; for anything
+beyond that, run it inside a container or VM with no access to real
+secrets, not on your own machine.
+
+The diff content sent to the security subagent is also treated as
+untrusted: it's fenced in `<diff>` tags and the system prompt instructs the
+model to analyze it as data, never as instructions, so a PR can't talk its
+way past its own review.
+
 ## Setup
 
 ```bash
