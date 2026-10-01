@@ -835,12 +835,19 @@ class SecurityAgent:
     def review(self, pr_info: PRInfo) -> list[Finding]:
         try:
             message = self.client.messages.create(
-                model="claude-sonnet-4-5",
-                max_tokens=2048,
+                model="claude-opus-5",
+                max_tokens=16000,
                 system=SYSTEM_PROMPT,
                 messages=[{"role": "user", "content": f"Diff for PR #{pr_info.number} in {pr_info.repo}:\n\n{pr_info.diff}"}],
             )
+        except anthropic.RateLimitError as e:
+            raise SecurityAgentError(f"Anthropic API rate limited: {e}")
+        except anthropic.APIConnectionError as e:
+            raise SecurityAgentError(f"Anthropic API connection error: {e}")
+        except anthropic.APIStatusError as e:
+            raise SecurityAgentError(f"Anthropic API returned {e.status_code}: {e.message}")
         except Exception as e:
+            # Fail closed on anything unexpected too - never silently treat as "no findings".
             raise SecurityAgentError(f"Anthropic API call failed: {e}")
 
         text_blocks = [block.text for block in message.content if block.type == "text"]
