@@ -74,15 +74,13 @@ Fail closed, not open — this is itself a point worth being able to explain in 
 - `github_client` and `security_agent` tested with mocked HTTP/API responses for the happy path and each failure mode above.
 - One or two manual end-to-end runs against the seeded demo repo's real PRs — not run in CI, since each costs real Anthropic API tokens.
 
-## How this maps to the AT&T Principal AI Engineer, SDLC JD
+## Design rationale
 
-(Kept here because it's the reason this project exists on this timeline — see `~/code/career-ops/interview-prep/att-principal-ai-engineer-sdlc.md`.)
-
-- "Hands-on daily use of a coding agent... point of view on when the agent is the driver versus when it must be gated" → the security subagent is the driver on review, the deterministic test runner is the gate; the design doc above is the explicit statement of that split.
-- "Put evaluation in front of main. Agent changes do not ship on hope." → `test_runner.py` is real `pytest`, not an LLM's opinion.
-- "At least one engineering metric they will defend: baseline, after, whose dashboard" → `review.py --report`, backed by `memory_store.py`.
-- "Build and maintain reusable skills, workflows... that more than one team can pick up" → scoped as a standalone review/gate component on purpose, not wired to one team's pipeline.
-- "Produce artifacts someone else can open — a public... repo... a talk" → the repo itself, plus a short README walkthrough or recorded demo once built.
+- A coding agent's "point of view on when it is the driver versus when it must be gated" → the security subagent is the driver on review, the deterministic test runner is the gate; this split is the explicit point of the design.
+- "Put evaluation in front of main — agent changes do not ship on hope" → `test_runner.py` is real `pytest`, not an LLM's opinion.
+- "At least one engineering metric to defend: baseline, after, whose dashboard" → `review.py --report`, backed by `memory_store.py`.
+- "Reusable, not a one-off script per squad" → scoped as a standalone review/gate component on purpose, not wired to one team's pipeline.
+- "An artifact someone else can open" → the repo itself, plus a short README walkthrough or recorded demo once built.
 
 ## Success criteria for this pass
 
